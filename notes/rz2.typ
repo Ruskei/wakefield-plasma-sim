@@ -1,4 +1,5 @@
 #import "@preview/physica:0.9.8": *
+#import "@preview/fletcher:0.5.8" as fletcher: diagram, node, edge
 
 == Introduction and Reduced De Rham Sequences
 
@@ -266,6 +267,143 @@ $
 $
 
 == Projections
+
+#align(left)[
+  === Poloidal Chain
+  #diagram(
+    node((1, 0), $H^1(hat(Omega))$, name: <h1>),
+    node((2, 0), $H(hat(nabla)_p times, hat(Omega))$, name: <curl>),
+    node((3, 0), $H(hat(nabla) dot, hat(Omega))$, name: <div>),
+  
+    node((0, 1), $hat(V)_(p,h)^0$, name: <v0>),
+    node((1, 1), $hat(V)_(p,h)^1$, name: <v1>),
+    node((2, 1), $hat(V)_(p,h)^2$, name: <v2>),
+  
+    node((1, 2), $hat(W)_(p,h)^0$, name: <w0>),
+    node((2, 2), $hat(W)_(p,h)^1$, name: <w1>),
+    node((3, 2), $hat(W)_(p,h)^2$, name: <w2>),
+  
+    edge(<h1>, <curl>, $hat(nabla)$, "->"),
+    edge(<curl>, <div>, $hat(nabla)_p times$, "->"),
+  
+    edge(<h1>, <w0>, $Pi_W^(p,0)$, "->", bend: +40deg, label-side: right, label-pos: 25%),
+    edge(<curl>, <w1>, $Pi_W^(p,1)$, "->", bend: +40deg, label-side: right, label-pos: 25%),
+    edge(<div>, <w2>, $Pi_W^(p,2)$, "->", bend: +40deg, label-side: right, label-pos: 25%),
+  
+    edge(<h1>, <v0>, $Pi^(p,0)$, "->", bend: -10deg, label-side: center, label-pos: 35%),
+    edge(<curl>, <v1>, $Pi^(p,1)$, "->", bend: -10deg, label-side: center, label-pos: 35%),
+    edge(<div>, <v2>, $Pi^(p,1)$, "->", bend: -10deg, label-side: center, label-pos: 35%),
+  
+    edge(<w0>, <v0>, $P_p^0$, "->", label-side: center, bend: -10deg),
+    edge(<w1>, <v1>, $P_p^1$, "->", label-side: center, bend: -10deg),
+    edge(<w2>, <v2>, $P_p^2$, "->", label-side: center, bend: -10deg),
+  
+    edge(<v0>, <v1>, $hat(nabla)$, "->"),
+    edge(<v1>, <v2>, $hat(nabla)_p times$, "->"),
+  
+    edge(<w0>, <w1>, $hat(nabla)$, "->"),
+    edge(<w1>, <w2>, $hat(nabla)_p times$, "->"),
+  )
+]
+
+#align(right)[
+  === Toroidal Chain
+  #diagram(
+    node((1, 0), $H(hat(nabla)_theta times, hat(Omega))$, name: <h1>),
+    node((2, 0), $H(hat(nabla) dot, hat(Omega))$, name: <h2>),
+    node((3, 0), $L^2 (hat(Omega))$, name: <h3>),
+  
+    node((0, 1), $hat(V)_(theta,h)^1$, name: <v0>),
+    node((1, 1), $hat(V)_(theta,h)^2$, name: <v1>),
+    node((2, 1), $hat(V)_(theta,h)^3$, name: <v2>),
+  
+    node((1, 2), $hat(W)_(theta,h)^1$, name: <w0>),
+    node((2, 2), $hat(W)_(theta,h)^2$, name: <w1>),
+    node((3, 2), $hat(W)_(theta,h)^3$, name: <w2>),
+  
+    edge(<h1>, <h2>, $hat(nabla)_theta times$, "->"),
+    edge(<h2>, <h3>, $hat(nabla) dot$, "->"),
+  
+    edge(<h1>, <w0>, $Pi_W^(theta,1)$, "->", bend: +40deg, label-side: right, label-pos: 25%),
+    edge(<h2>, <w1>, $Pi_W^(theta,2)$, "->", bend: +40deg, label-side: right, label-pos: 25%),
+    edge(<h3>, <w2>, $Pi_W^(theta,3)$, "->", bend: +40deg, label-side: right, label-pos: 25%),
+  
+    edge(<h1>, <v0>, $Pi^(theta,1)$, "->", bend: -10deg, label-side: center, label-pos: 35%),
+    edge(<h2>, <v1>, $Pi^(theta,2)$, "->", bend: -10deg, label-side: center, label-pos: 35%),
+    edge(<h3>, <v2>, $Pi^(theta,3)$, "->", bend: -10deg, label-side: center, label-pos: 35%),
+  
+    edge(<w0>, <v0>, $P_theta^1$, "->", label-side: center, bend: -10deg),
+    edge(<w1>, <v1>, $P_theta^2$, "->", label-side: center, bend: -10deg),
+    edge(<w2>, <v2>, $P_theta^3$, "->", label-side: center, bend: -10deg),
+  
+    edge(<v0>, <v1>, $hat(nabla)_theta times$, "->"),
+    edge(<v1>, <v2>, $hat(nabla) dot$, "->"),
+  
+    edge(<w0>, <w1>, $hat(nabla)_theta times$, "->"),
+    edge(<w1>, <w2>, $hat(nabla) dot$, "->"),
+  )
+]
+
+=== *$Pi$* Operators
+
+We need to first project from continuous space to spline space. We have
+$
+  Pi_W^cal(l) v in hat(W)_h^cal(l), quad hat(bold(sigma))^cal(l) (Pi_W^cal(l) v) = hat(bold(sigma))^cal(l) (v)
+$
+where degrees of freedom correspond to point values, line integrals, face integrals, cell integrals. Our DOF's are
+$
+  "poloidal" : cases(
+    sigma_(i j)^(p,0) (phi) = phi (r_i, z_j),
+    sigma_(i j)^(p,1,r) (bold(E)) = integral_(r_i)^(r_(i+1)) E_r (r, z_j) dif r\, wide
+      sigma_(i j)^(p,1,z) (bold(E)) = integral_(z_j)^(z_(j+1)) E_z (r_i, z) dif z,
+    sigma_(i j)^(p,2) (B_theta)  = integral_(r_i)^(r_(i+1)) integral_(z_j)^(z_(j+1)) B_theta (r,z) dif r dif z
+  )
+$
+$
+  "toroidal" : cases(
+    sigma_(i j)^(theta,1) (E_theta) = 2 pi v_theta (r_i, z_j),
+    sigma_(i j)^(theta,2,r) (bold(B)) = 2 pi integral_(z_j)^(z_(j+1)) B_r (r_i, z) dif z\, wide sigma_(i j)^(theta,2,z) (bold(B)) = 2 pi integral_(r_i)^(r_(i+1)) B_z (r, z_j) dif r,
+    sigma_(i j)^(theta,3) (tau) = 2 pi integral_(r_i)^(r_(i+1)) integral_(z_j)^(z_(j+1)) tau (r,z) dif r dif z
+  )
+$
+then we need
+$
+  Pi_W^(p,0) phi = sum_(k,j) c_(k l) B_k (r) B_l (z), quad sum_(k,j) c_(k l) B_k (r_i) B_l (z_j) = phi(r_i, z_j) \
+  Pi_W^(p,1) bold(E) = sum_(k,l) vec(c_(k l)^r M_k (r) B_l (z), c_(k l)^z B_k (r) M_l (z)), quad
+    sum_(k,l) vec(
+      integral_(r_i)^(r_(i+1)) c_(k l)^r M_k (r) B_l (z_j) dif r,
+      integral_(z_j)^(z_(j+1)) c_(k l)^z B_k (r_i) M_l (z) dif z
+    ) = vec(
+      integral_(r_i)^(r_(i+1)) E_r (r, z_j) dif r,
+      integral_(z_j)^(z_(j+1)) E_z (r_i, z) dif z
+    )
+  \
+  Pi_W^(p,2) B_theta = sum_(k,j) M_k (r) M_j (z), quad
+  limits(integral)_(r_i)^(r_(i+1)) limits(integral)_(z_j)^(z_(j+1)) sum_(k,j) M_k (r) M_j (z) dif r dif z = limits(integral)_(r_i)^(r_(i+1)) limits(integral)_(z_j)^(z_(j+1)) B_theta (r,z) dif r dif z
+$
+and similar relations for the toroidal operators. These commute due to Stokes' theorem. Now to find the coefficients, let's take $Pi_W^(p,0)$
+$
+  Pi_W^(p,0) phi = sum_(k,j) c_(k l) B_k (r) B_l (z)
+$
+take knots $zeta_a^r, zeta_b^z$ in $r$ and $z$ directions, we have
+$
+  sum_(k,j) c_(k l) B_k (zeta_a^r) B_l (zeta_b^z) = phi(zeta_a^r, zeta_b^z) = s_(a b)
+$
+define collocation matrices
+$
+  K_r [a,i] = B_i (zeta_a^r), quad K_z [b,j] = B_j (zeta_b^r)
+$
+then
+$
+  K_r C K_z^T = S
+$
+so we solve
+$
+  K_r Y = S, quad K_z C^T = Y^T
+$
+same for the other operators. These $K$ matrices can be precomputed once at the start of the simulation, and with the inverses found the spline coefficients are easily computed. Greville points are used as nodes.
+
+=== *$P$* Operators
 
 We now construct projections from the unconstrained spline spaces onto the admissible spaces in a way that commutes with the reduced differential operators.
 
