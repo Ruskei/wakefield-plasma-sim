@@ -532,3 +532,47 @@ $
   = - hat(T)_(1,j)^(theta,3).
 $
 All remaining cases commute immediately from the definitions.
+
+== Discrete Derivative Matrices
+
+$
+  hat(nabla) (B_i times.o B_j) = vec(
+    (M_(i-1) - M_i) times.o B_j,
+    B_i times.o (M_(j-1) - M_j)
+  ), quad hat(nabla)_p times vec(
+    a M_i times.o B_j,
+    b B_i times.o M_j
+  ) = a M_i times.o (M_(j-1) - M_j) - b (M_(i-1) - M_i) times.o M_j \
+  hat(nabla)_theta times (B_i times.o B_j) = vec(
+    - B_i times.o (M_(j-1) - M_j),
+    (M_(i-1) - M_i) times.o B_j
+  ), quad hat(nabla) dot vec(
+    a B_i times.o M_j,
+    b M_i times.o B_j
+  ) = a (M_(i-1) - M_i) times.o M_j + b M_i (M_(j-1) - M_j)
+$
+
+Then we construct matrices
+$
+  cal(G)_((r,l,k),(i,j)) = (delta_(l,i-1) - delta_(l,i)) delta_(k,j), quad cal(G)_((z,l,k),(i,j)) = delta_(l,i) (delta_(k,j-1) - delta_(k,j)) \
+  cal(C)_((l,k),(r,i,j))^p = delta_(l,i) (delta_(k,j-1) - delta_(k,j)), quad cal(C)_((l,k),(z,i,j))^p = - (delta_(l,i-1) - delta_(l,i)) delta_(k,j) \
+  cal(C)_((r,l,k),(i,j))^theta = - delta_(l,i) (delta_(k,j-1) - delta_(k,j)), quad cal(C)_((z,l,k),(i,j))^theta = (delta_(l,i-1) - delta_(l,i)) delta_(k,j) \
+  cal(D)_((l,k),(r,i,j)) = (delta_(l,i-1) - delta_(l,i)) delta_(k,j), quad cal(D)_((l,k),(z,i,j)) = delta_(l,i) (delta_(k,j-1) - delta_(k,j))
+$
+with indices
+$
+  cal(G) in RR^(cal(J)_h^(p,1) times cal(J)_h^(p,0)), quad cal(C)^p in RR^(cal(J)_h^(p,2) times cal(J)_h^(p,1)) \
+  cal(C)^theta in RR^(cal(J)_h^(theta,2) times cal(J)_h^(theta,1)), quad cal(D) in RR^(cal(J)_h^(theta,3) times cal(J)_h^(theta,2))
+$
+$
+  cal(J)_h^(p,0) &= {(i,j) : 0<= i < n_s, 0<= j < n_z} \
+  cal(J)_h^(p,1) &= {(i,j) : 0 <= i < n_s - 1, 0<= j < n_z } union {(i,j) : 0 <= i < n_s, 0<= j < n_z - 1} \
+  cal(J)_h^(p,2) &= {(i,j) : 0 <= i < n_s - 1, 0 <= j < n_z - 1}
+$
+$
+  cal(J)_h^(theta,1) &= {(i,j) : 0 <= i < n_s, 0 <= j < n_z} \
+  cal(J)_h^(theta,2) &= {(i,j) : 0 <= i < n_s, 0 <= j < n_z - 1 } union {(i,j) : 0 <= i < n_s - 1, 0<= j < n_z } \ 
+  cal(J)_h^(theta,3) &= {(i,j) : 0 <= i < n_s - 1, 0 <= j < n_z - 1}
+$
+
+These can be verified to satisfy $cal(C)^p cal(G) = 0, cal(D) cal(C)^theta = 0$.
