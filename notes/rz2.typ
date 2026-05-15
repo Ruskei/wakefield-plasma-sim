@@ -602,7 +602,7 @@ Using index sets $mu = (i,j), nu = (k,l)$
   $
 )
 
-== Ampere's & Gauss's Law
+== Maxwell's Equations
 
 Our fields are
 #grid(
@@ -634,7 +634,11 @@ $
 so discretely
 $
   cal(M)^(p,1) dot(bold(e))^p &= (cal(C)^p)^T cal(M)^(p,2) bold(b)_theta - bold(j)^p \
-  cal(M)^(theta,1) dot(bold(e))^theta &= (cal(C)^theta)^T cal(M)^(theta,2) bold(b)_theta - bold(j)^theta \
+  cal(M)^(theta,1) dot(bold(e))^theta &= (cal(C)^theta)^T cal(M)^(theta,2) bold(b)^p - bold(j)^theta \
 $
 
-
+Then Faraday's and magnetic Gauss' law are
+$
+  cal(C)^p bold(e)^p = - dot(bold(b))_theta, quad cal(C)^theta bold(e)^theta = - dot(bold(b))^p \
+  cal(D) bold(b)^p = 0
+$
