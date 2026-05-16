@@ -364,7 +364,7 @@ $
 $
 $
   "toroidal" : cases(
-    sigma_(i j)^(theta,1) (E_theta) = 2 pi v_theta (r_i, z_j),
+    sigma_(i j)^(theta,1) (E_theta) = 2 pi r_i E_theta (r_i, z_j),
     sigma_(i j)^(theta,2,r) (bold(B)) = 2 pi integral_(z_j)^(z_(j+1)) B_r (r_i, z) dif z\, wide sigma_(i j)^(theta,2,z) (bold(B)) = 2 pi integral_(r_i)^(r_(i+1)) B_z (r, z_j) dif r,
     sigma_(i j)^(theta,3) (tau) = 2 pi integral_(r_i)^(r_(i+1)) integral_(z_j)^(z_(j+1)) tau (r,z) dif r dif z
   )
@@ -536,6 +536,65 @@ $
 $
 All remaining cases commute immediately from the definitions.
 
+== Constrained Coefficients
+
+To keep our fields constrained we must represent things in a constrained space, so we define
+
+$
+  P^cal(l) = R^cal(l) S^cal(l)
+$
+
+where $S^cal(l)$ maps from unconstrained coefficients to reduced coefficients, $R^cal(l)$ maps back to full coefficients. We first define some common elements of our constraints:
+
+$
+  R_B^= &= [e_0 + e_1, e_2, ... , e_(n_s - 1)], quad
+    && S_B^= = vec(
+      delim: "[",
+      e_1^T, e_2^T, dots.v, e_(n_s-1)^T
+    ) \
+  R_M^0 &= [e_1, e_2, ... , e_(n_s - 2)], quad
+    && S_M^0 = vec(
+      delim: "[",
+      e_1^T, e_2^T, dots.v, e_(n_s-2)^T
+    ) \
+  R_B^00 &= [e_2, e_3, ... , e_(n_s - 1)], quad
+    && S_B^(00,"tel") = vec(
+      delim: "[",
+      e_2^T - e_1^T,
+      e_3^T - e_1^T,
+      dots.v,
+      e_(n_s - 1)^T - e_1^T
+    ) \
+$
+then we have
+$
+  "poloidal"
+  cases(
+    R_p^0 = I_n_z times.o R_B^=\, quad S_p^0 = I_n_z times.o S_B^=,
+    R_p^1 = mat(
+      I_n_z times.o R_M^0, 0;
+      0, I_(n_z - 1) times.o R_B^=
+    )\, quad S_p^1 = mat(
+      I_n_z times.o S_M^0, 0;
+      0, I_(n_s - 1) times.o S_B^=
+    ),
+    R_p^2 = I_(n_z - 1) times.o R_M^0\, quad S_p^2 = I_(n_z - 1) times.o S_M^0
+  ) \
+  "toroidal"
+  cases(
+    R_theta^1 = I_n_z times.o R_B^00\, quad S_theta^1 = I_n_z times.o S_B^(00\,"tel"),
+    R_theta^2 = mat(
+      I_(n_z-1) times.o R_B^00, 0;
+      0, I_n_z times.o R_M^0
+    )\, quad S_theta^2 = mat(
+      I_(n_z-1) times.o S_B^(00,"tel"), 0;
+      0, I_n_z times.o S_M^0
+    ),
+    R_theta^3 = I_(n_z-1) times.o R_M^0\, quad S_theta^3 = I_(n_z-1) times.o S_M^0
+  )
+$
+which are all easily derived and checked.
+
 == Discrete Derivative Matrices
 
 $
@@ -585,6 +644,14 @@ $
   hat(nabla)_theta times hat(T)_a^(theta,1) = sum_mu cal(C)_(mu a)^theta hat(bold(T))_mu^(theta,2), quad hat(nabla) dot hat(bold(T))_a^(theta,2) = sum_mu cal(D)_(mu a) hat(T)_mu^(theta,3) \
 $
 
+We also construct reduced operators
+$
+  overline(cal(G)) &= S_p^1 cal(G) R_p^0 \
+  overline(cal(C))^p &= S_p^2 cal(C)^p R_p^1 \
+  overline(cal(C))^theta &= S_theta^2 cal(C)^theta R_theta^1 \
+  overline(cal(D)) &= S_theta^3 cal(D) R_theta^2 \
+$
+
 == Mass Matrices
 
 Using index sets $mu = (i,j), nu = (k,l)$
@@ -601,6 +668,11 @@ Using index sets $mu = (i,j), nu = (k,l)$
     cal(M)_(mu,nu)^(theta,3) &= 2 pi integral_hat(Omega) hat(T)_mu^(theta,3) hat(T)_nu^(theta,3) med 1/r dif r dif z \
   $
 )
+
+our reduced versions are:
+$
+  overline(cal(M))^cal(l) = 2 pi integral_hat(Omega) (Lambda_"full"^cal(l) R_theta^cal(l))^T (Lambda_"full"^cal(l) R_theta^cal(l)) 1/r dif r dif z
+$
 
 == Maxwell's Equations
 
@@ -642,3 +714,17 @@ $
   cal(C)^p bold(e)^p = - dot(bold(b))_theta, quad cal(C)^theta bold(e)^theta = - dot(bold(b))^p \
   cal(D) bold(b)^p = 0
 $
+
+== Equations of Motion
+
+The positions of all particles and their velocities are vectors $bold(Xi) := (bold(xi)_1, ..., bold(xi)_N_P)^T, bold(V) := (bold(v)_1, ..., bold(v)_N_P)^T$, $MM_m := diag(omega_p m_p) times.o II_3, MM_q := diag(omega_p q_p) times.o II_3, 1 <= p <= N_p$, where $bold(xi)_n = (r_n, z_n)$.
+$
+  dot(bold(Xi)) &= bold(V)_(r z) \
+  dot(bold(V)) &= MM_q MM_m^(-1) (bold(E(bold(Xi),t)) + bold(V) times bold(B)(bold(Xi),t)) + vec(
+    v_theta^2 \/ r,
+    - v_r v_theta \/ r,
+    0
+  )
+$
+
+
