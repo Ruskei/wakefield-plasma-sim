@@ -1,3 +1,4 @@
+import strutils
 import random
 
 type
@@ -115,12 +116,39 @@ proc ρ_from_particles[S: static SimulationSettings](
         ρ[ri, zi] += r_vals[rk] * z_vals[zk]
   result = ρ
 
+proc write_npy_f64_2d(path: string; data: openArray[f64]; nx, ny: int) =
+  assert data.len == nx * ny
+  let f = open(path, fmWrite)
+  defer: f.close()
+
+  let magic = "\x93NUMPY"
+  f.write(magic)
+  f.write(char(1))
+  f.write(char(0))
+
+  var header = "{'descr': '<f8', 'fortran_order': False, 'shape': (" &
+               $ny & ", " & $nx & "), }"
+  let preamble_len = 10
+  let pad_len = (16 - ((preamble_len + header.len + 1) mod 16)) mod 16
+  header &= repeat(' ', pad_len) & "\n"
+  let hlen = uint16(header.len)
+  f.write(char(hlen and 0xff))
+  f.write(char((hlen shr 8) and 0xff))
+
+  f.write (header)
+
+  for v in data:
+    var x = v
+    discard f.writeBuffer(addr x, sizeof(f64))
+
+
+
 proc main() =
   randomize()
 
   const S = SimulationSettings(
-    NR: 16,
-    NZ: 16,
+    NR: 518,
+    NZ: 518,
     P: 3,
     H: 1
   )
@@ -128,11 +156,11 @@ proc main() =
   let e_species = ParticleSpecies(q: 1, m: 1)
   var particles: seq[MacroParticle] = @[]
 
-  for _ in 0 ..< 100:
+  for _ in 0 ..< 1_000_000:
     particles.add MacroParticle(
       species: e_species,
       n: 1,
-      p: Vec2D(r: rand(3.0 .. 12.0), z: rand(3.0 .. 12.0))
+      p: Vec2D(r: rand(0.0 .. 512.0), z: rand(0.0 .. 512.0))
     )
 
   let ρ = ρ_from_particles[S](particles)
@@ -141,5 +169,7 @@ proc main() =
     for z in 0 ..< S.NZ:
       s += ρ[r, z]
   echo s
+
+  write_npy_f64_2d("rho.npy", ρ.data, S.NR, S.NZ)
 
 main()
