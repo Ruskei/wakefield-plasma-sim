@@ -571,25 +571,25 @@ $
   "poloidal"
   cases(
     R_p^0 = I_n_z times.o R_B^=\, quad S_p^0 = I_n_z times.o S_B^=,
-    R_p^1 = mat(
+    R_p^1 = display(mat(
       I_n_z times.o R_M^0, 0;
       0, I_(n_z - 1) times.o R_B^=
-    )\, quad S_p^1 = mat(
+    ))\, quad S_p^1 = display(mat(
       I_n_z times.o S_M^0, 0;
-      0, I_(n_s - 1) times.o S_B^=
-    ),
+      0, I_(n_z - 1) times.o S_B^=
+    )),
     R_p^2 = I_(n_z - 1) times.o R_M^0\, quad S_p^2 = I_(n_z - 1) times.o S_M^0
   ) \
   "toroidal"
   cases(
     R_theta^1 = I_n_z times.o R_B^00\, quad S_theta^1 = I_n_z times.o S_B^(00\,"tel"),
-    R_theta^2 = mat(
+    R_theta^2 = display(mat(
       I_(n_z-1) times.o R_B^00, 0;
       0, I_n_z times.o R_M^0
-    )\, quad S_theta^2 = mat(
+    ))\, quad S_theta^2 = display(mat(
       I_(n_z-1) times.o S_B^(00,"tel"), 0;
       0, I_n_z times.o S_M^0
-    ),
+    )),
     R_theta^3 = I_(n_z-1) times.o R_M^0\, quad S_theta^3 = I_(n_z-1) times.o S_M^0
   )
 $
@@ -646,10 +646,10 @@ $
 
 We also construct reduced operators
 $
-  overline(cal(G)) &= S_p^1 cal(G) R_p^0 \
-  overline(cal(C))^p &= S_p^2 cal(C)^p R_p^1 \
-  overline(cal(C))^theta &= S_theta^2 cal(C)^theta R_theta^1 \
-  overline(cal(D)) &= S_theta^3 cal(D) R_theta^2 \
+  macron(cal(G)) &= S_p^1 cal(G) R_p^0 \
+  macron(cal(C))^p &= S_p^2 cal(C)^p R_p^1 \
+  macron(cal(C))^theta &= S_theta^2 cal(C)^theta R_theta^1 \
+  macron(cal(D)) &= S_theta^3 cal(D) R_theta^2 \
 $
 
 == Mass Matrices
@@ -671,7 +671,7 @@ Using index sets $mu = (i,j), nu = (k,l)$
 
 our reduced versions are:
 $
-  overline(cal(M))^cal(l) = 2 pi integral_hat(Omega) (Lambda_"full"^cal(l) R_theta^cal(l))^T (Lambda_"full"^cal(l) R_theta^cal(l)) 1/r dif r dif z
+  macron(cal(M))^cal(l) = 2 pi integral_hat(Omega) (Lambda_"full"^cal(l) R_theta^cal(l))^T (Lambda_"full"^cal(l) R_theta^cal(l)) 1/r dif r dif z
 $
 
 == Maxwell's Equations
@@ -693,6 +693,9 @@ $
   - 2 pi integral_hat(Omega) hat(nabla) hat(T)_a^(p,0) (r,z) dot bold(E)^p (r,z,t) r dif r dif z = hat(rho) (hat(T)_a^(p,0)) \
   - sum_(mu, nu) cal(G)_(mu a) cal(M)_(mu nu)^(p,1) e_nu^p = hat(rho) (hat(T)_a^(p,0)) \
   cal(G)^T cal(M)^(p,1) bold(e)^p = -bold(rho)^0, quad bold(rho)_a^0 = sum_(p=1)^N_p q_p omega_p hat(T)_a^(p,0) (r_p, z_p)
+$
+$
+  macron(cal(G))^T macron(cal(M))^(p,1) macron(bold(e))^p = -macron(bold(rho))^0
 $
 
 Ampere's law (where $phi$ is a test function)
@@ -727,4 +730,77 @@ $
   )
 $
 
+== Poisson Solve
 
+From discrete Gauss law
+$
+  cal(G)^T cal(M)^(p,1) bold(e)^p = -bold(rho)^0
+$
+electrostatics imply:
+$
+  bold(e)^p = - cal(G) bold(phi)
+$
+thus
+$
+  cal(G)^T cal(M)^(p,1) cal(G) bold(phi) = bold(rho)^0
+$
+with reduction
+$
+  cal(K) = (R_p^0)^T cal(G)^T cal(M)^(p,1) cal(G) R_p^0 , quad cal(K)macron(bold(phi)) = (R_p^0)^T bold(rho)^0
+$
+
+== Spline Math
+
+our recursion is
+$
+  hat(B)_(i,0) (zeta)
+    = cases(
+      1 "if" xi_i <= zeta < xi_(i+1),
+      0 "otherwise"
+    ) \
+  hat(B)_(i,p) (zeta)
+    = (zeta - xi_i) / (xi_(i+p) - xi_i)
+    hat(B)_(i,p-1) (zeta)
+    + (xi_(i+p+1) - zeta) / (xi_(i+p+1) - xi_(i+1))
+    hat(B)_(i+1,p-1) (zeta)
+$
+where $0\/0 = 0$. now with regular splines, we have
+$
+  xi_i =
+    cases(
+      0 quad & 1 <= i < p+1,
+      (i-p-1)h quad & p+1 <= i < n+1,
+      (n - p)h quad & n+1 <= i <= n + p + 1
+    )
+$
+our goal is given $zeta$ to find the nonzero values of $B$ at various nodes. since $i$ doesn't go backwards in the recursive relationship, and in $xi_i <= zeta < xi_(i+1), quad xi_i = floor(zeta \/ h)+p+1$, $hat(B)_(i,p) (zeta) = 0 quad forall i > floor(zeta\/h) + p + 1$. then for the lower bound, since $hat(B)$ adds $1$ to $i$ for every $p$, and for instance $p=0$ leads to a support of 1 element, $p=1==>2$, etc, thus each $hat(B)$ has support $[xi_i,xi_(i+p+1)]$, which includes $p$ elements.
+
+then for evaluation, notice our dependency chain
+
+#align(center)[#diagram(
+  node((0, 3), $cancel(B_(0,0))$),
+  node((1, 3), $cancel(B_(1,0))$),
+  node((2, 3), $B_(2,0)$),
+
+  node((0, 2), $cancel(B_(0,1))$),
+  node((1, 2), $B_(1,1)$),
+  node((2, 2), $B_(2,1)$),
+
+  node((0, 1), $B_(0,2)$),
+  node((1, 1), $B_(1,2)$),
+  node((2, 1), $B_(2,2)$),
+
+  edge((0, 3), (0,2), "->"),
+  edge((1, 3), (1,2), "->"),
+  edge((2, 3), (2,2), "->"),
+
+  edge((0, 2), (0,1), "->"),
+  edge((1, 2), (1,1), "->"),
+  edge((2, 2), (2,1), "->"),
+
+  edge((1, 3), (0,2), "->"),
+  edge((2, 3), (1,2), "->"),
+
+  edge((1, 2), (0,1), "->"),
+  edge((2, 2), (1,1), "->"),
+)]
