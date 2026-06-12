@@ -749,6 +749,17 @@ $
   cal(K) = (R_p^0)^T cal(G)^T cal(M)^(p,1) cal(G) R_p^0 , quad cal(K)macron(bold(phi)) = (R_p^0)^T bold(rho)^0
 $
 
+Discrete reduced Gauss law is
+$
+  macron(cal(G))^T macron(cal(M))^(p,1) macron(bold(e))^p = -macron(bold(rho))^0
+$
+in electrostatics we have
+$
+  bold(e)^p = - cal(G) bold(phi) \
+  macron(bold(e))^p
+    = 
+$
+
 == Spline Math
 
 our recursion is
@@ -804,3 +815,8 @@ then for evaluation, notice our dependency chain
   edge((1, 2), (0,1), "->"),
   edge((2, 2), (1,1), "->"),
 )]
+
+our $M$ splines are defined by
+$
+  B'_i = M_(i-1) - M_i
+$

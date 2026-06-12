@@ -1,10 +1,3 @@
-# now we need to represent simulation
-# for this we need to represent the simulation fields
-# simulation is defined by ns, nz, which control the number of nodes in each direction
-# since ρ is a zero-form, we just use full dimensions for it
-# however we want to only store reduced ρ, which has different dimensions
-# ρ is a functional of a basis function that returns how much of the charge is contributed to by that function
-
 import std/random
 
 import short_names
@@ -23,7 +16,13 @@ type
     spacing: f64
   Simulation[settings: static SimulationSettings] = ref object
     ρ: Matrix[settings.ns - 1, settings.nz, f64]
+  MultiIndex = Vec2[int]
 
+# proc reduced_mass_matrix_poloidal_1_s_entry[
+#   settings: static SimulationSettings
+# ](μ, ν: MultiIndex): f64 =
+#
+#
 proc deposit_ρ[settings: static SimulationSettings](
   ρ: var Matrix[settings.ns - 1, settings.nz, f64];
   particles: seq[MacroParticle]
@@ -38,8 +37,8 @@ proc deposit_ρ[settings: static SimulationSettings](
     let s_offset = knot_offset[s_spline](s)
     let z_offset = knot_offset[z_spline](z)
 
-    let s_spline_values = evaluate[s_spline](s)
-    let z_spline_values = evaluate[z_spline](z)
+    let s_spline_values = evaluate_b_spline[s_spline](s)
+    let z_spline_values = evaluate_b_spline[z_spline](z)
 
     for s_idx in 0 ..< s_spline_values.len:
       for z_idx in 0 ..< z_spline_values.len:
