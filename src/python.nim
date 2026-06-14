@@ -28,5 +28,8 @@ proc write_npy_2d_f64(path: string; data: openArray[f64]; rows, cols: int) =
 
   discard f.writeBuffer(addr data[0], data.len * 8)
 
-proc write_npy_matrix_f64*[rows, cols: static int](path: string, m: Matrix[rows, cols, f64]) =
+proc write_npy_dense_matrix_f64*[rows, cols: static int](path: string, m: DenseMatrix[rows, cols, f64]) =
   write_npy_2d_f64(path, m.data, rows, cols)
+
+proc write_npy_band_matrix_f64*[rows, bandwidth: static int](path: string, m: BandMatrix[rows, bandwidth, f64]) =
+  write_npy_2d_f64(path, m.data, rows, bandwidth)

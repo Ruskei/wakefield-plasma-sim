@@ -7,6 +7,7 @@ plt.imshow(
     data,
     origin="lower",
     aspect="auto",
-    cmap="plasma"
+    cmap="plasma",
+    interpolation="nearest"
 )
 plt.show()
