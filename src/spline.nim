@@ -13,6 +13,7 @@ type
 template low(spline: static Spline): f64 = 0
 template high(spline: static Spline): f64 = (spline.n - spline.p).f64 * spline.h
 
+# 1-indexed
 proc knot*[spline: static Spline](i: int): f64 =
   ((i - spline.p - 1).f64 * spline.h).clamp(low(spline), high(spline))
 
@@ -73,11 +74,11 @@ proc evaluate_m_spline*[spline: static Spline](x: f64): array[spline.p + 0, f64]
       (knot_ip1 - knot_i1)
 
     for j in (spline.p - i) .. (spline.p - 2):
-      let knot_j = knot[spline](knot_offset + j)
-      let knot_jp = knot[spline](knot_offset + j + i)
+      let knot_j = knot[spline](knot_offset + j + 1)
+      let knot_jp = knot[spline](knot_offset + j + i + 1)
 
-      let knot_jp1 = knot[spline](knot_offset + j + i + 1)
-      let knot_j1 = knot[spline](knot_offset + j + 1)
+      let knot_jp1 = knot[spline](knot_offset + j + i + 2)
+      let knot_j1 = knot[spline](knot_offset + j + 2)
 
       result[j] = result[j] *
         (x - knot_j) /
@@ -90,3 +91,7 @@ proc evaluate_m_spline*[spline: static Spline](x: f64): array[spline.p + 0, f64]
 
     result[spline.p - 1] *= (x - knot_k) /
       (knot_kp - knot_k)
+
+  for i in 0..<spline.p:
+    result[i] *= spline.p.f64 /
+      (knot[spline](knot_offset + i + spline.p + 1) - knot[spline](knot_offset + i + 1))

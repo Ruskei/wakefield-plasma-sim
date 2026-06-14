@@ -10,20 +10,19 @@ proc write_npy_2d_f64(path: string; data: openArray[f64]; rows, cols: int) =
 
   const magic = "\x93NUMPY"
 
+  var header = "{'descr':'<f8', 'fortran_order': False, 'shape': (" &
+    $rows & ", " & $cols & "), }"
+  
+  let pad_len = (64 - (magic.len + 4 + header.len + 1) mod 64) mod 64
+  header &= " ".repeat(pad_len)
+  header &= '\n'
+
   f.write magic
   f.write '\x01'
   f.write '\x00'
 
-  var header = "{'descr':'<f8', 'fortran_order': False, 'shape': (" &
-    $rows & ", " & $cols & "), }"
-
   f.write char(header.len.uint16 and 0xFF)
   f.write char((header.len.uint16 shr 8) and 0xFF)
-
-  let header_len = header.len
-
-  header &= " ".repeat(64 - (magic.len + 4 + header_len + 1) mod 64)
-  header &= '\n'
 
   f.write header
 
