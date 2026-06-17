@@ -133,7 +133,7 @@ proc ρ_test() =
 proc mass_matrix_test() =
   const space = kd_poloidal_1
   const settings = SimulationSettings(
-    ns: 512, nz: 512,
+    ns: 7, nz: 7,
     base_spline_order: 3,
     spacing: 1
   )

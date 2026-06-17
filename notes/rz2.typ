@@ -820,3 +820,66 @@ our $M$ splines are defined by
 $
   B'_i = M_(i-1) - M_i
 $
+first lets standardize notation
+$
+  B'_(i,p) = M_(i-1,p) - M_(i,p)
+$
+and compare with derivative
+$
+  B'_(i,p)
+    = 1/(xi_(i+p) - xi_i) (
+      B_(i,p-1) + (zeta - xi_i) B'_(i,p-1)
+    ) + 1/(xi_(i+p+1)-xi_(i-1)) (
+      (xi_(i+p+1)-zeta) B'_(i+1,p-1)
+      - B_(i+1,p-1)
+    )
+$
+let's try to evaluate some terms to get a feel for the pattern, remembering that $B'_(i,0) = 0$
+$
+  B'_(i,1)
+    = 1/(xi_(i+1) - xi_i) B_(i,0)
+    - 1/(xi_(i+2)-xi_(i+1)) B_(i+1,0) \
+  B'_(i+1,1)
+    = 1/(xi_(i+2) - xi_(i+1)) B_(i+1,0)
+    - 1/(xi_(i+3)-xi_(i+2)) B_(i+2,0) \
+  B'_(i,2)
+    = 1/(xi_(i+2) - xi_i) (
+      B_(i,1) + (zeta - xi_i)
+      (1/(xi_(i+1) - xi_i) B_(i,0)
+    - 1/(xi_(i+2)-xi_(i+1)) B_(i+1,0))) \
+    + 1/(xi_(i+3)-xi_(i+1)) (
+      (xi_(i+3)-zeta)
+      (1/(xi_(i+2) - xi_(i+1)) B_(i+1,0)
+    - 1/(xi_(i+3)-xi_(i+2)) B_(i+2,0))
+      - B_(i+1,1)
+    ) \
+    = 1/(xi_(i+2)-xi_i) B_(i,1)
+    + (zeta - xi_i) / ((xi_(i+2)-xi_i)(xi_(i+1)-xi_i)) B_(i,0)
+    - (zeta - xi_i) / ((xi_(i+2)-xi_i)(xi_(i+2)-xi_(i+1))) B_(i+1,0) \
+    + (xi_(i+3)-zeta) / ((xi_(i+3)-xi_(i+1))(xi_(i+2)-xi_(i+1))) B_(i+1,0)
+    - (xi_(i+3)-zeta) / ((xi_(i+3)-xi_(i+1))(xi_(i+3)-xi_(i+2))) B_(i+2,0)
+    - 1/(xi_(i+3)-xi_(i+1)) B_(i+1,1) \
+    = 2/(xi_(i+2)-xi_i) B_(i,1)
+    - (xi_(i+2))/((xi_(i+2)-xi_i)(xi_(i+2)-xi_(i+1))) B_(i+1,0)
+    - (- xi_i) / ((xi_(i+2)-xi_i)(xi_(i+2)-xi_(i+1))) B_(i+1,0) \
+    + (xi_(i+3)) / ((xi_(i+3)-xi_(i+1))(xi_(i+2)-xi_(i+1))) B_(i+1,0)
+    + (- xi_(i+1)) / ((xi_(i+3)-xi_(i+1))(xi_(i+2)-xi_(i+1))) B_(i+1,0)
+    - 2/(xi_(i+3)-xi_(i+1)) B_(i+1,1) \
+    = 2/(xi_(i+2)-xi_i) B_(i,1) - 2/(xi_(i+3)-xi_(i+1)) B_(i+1,1)
+$
+if we used an arbitrary index instead, this becomes an inductive proof of
+$
+  B'_(i,p)
+    = p/(xi_(i+p)-xi_i) B_(i,p-1)
+    - p/(xi_(i+p+1) - xi_(i+1)) B_(i+1,p-1)
+$
+thus, matching terms, we obtain a formula for $M$
+$
+  M_(i,p)
+    = p/(xi_(i+p+1) - xi_(i+1)) B_(i+1,p-1)
+$
+noting that our knots are regular
+$
+  M_(i,p)
+    = 1/h B_(i+1,p-1)
+$
