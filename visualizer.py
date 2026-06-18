@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-data = np.load("rmm2.npy")
+data = np.load("rmm.npy")
 
 plt.imshow(
     data,

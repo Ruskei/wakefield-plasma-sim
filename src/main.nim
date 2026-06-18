@@ -28,7 +28,9 @@ type
     # b_a = a factor for b component
     when space == kd_poloidal_1:
       s_s_factors: BandMatrix[settings.ns - 2, settings.base_spline_order, f64]
-      s_z_factors: BandMatrix[settings.nz, settings.base_spline_order, f64]
+      s_z_factors: BandMatrix[settings.nz, settings.base_spline_order + 1, f64]
+      z_s_factors: BandMatrix[settings.ns - 1, settings.base_spline_order + 1, f64]
+      z_z_factors: BandMatrix[settings.nz - 1, settings.base_spline_order, f64]
     else:
       discard
 
@@ -43,6 +45,7 @@ proc build_reduced_mass_matrix(
       let offset = knot[s_spline](k + 1)
       let knot_offset = k - s_spline.p
       let start_idx = if knot_offset == 0: 1 else: 0
+
       for i in 0..<s_spline.p:
         let point = (s_spline.h * quadrature_root(s_spline.p, i)) / 2 + offset + s_spline.h / 2
         let weight = s_spline.h / 2 * quadrature_weight(s_spline.p, i)
@@ -53,10 +56,32 @@ proc build_reduced_mass_matrix(
             result.s_s_factors[knot_offset + a - 1, knot_offset + b - 1] +=
               weight * values[a] * values[b] * point
 
+      for i in 0 .. s_spline.p:
+        let point = (s_spline.h * quadrature_root(s_spline.p + 1, i)) / 2 + offset + s_spline.h / 2
+        let weight = s_spline.h / 2 * quadrature_weight(s_spline.p + 1, i)
+
+        let values = evaluate_b_spline[s_spline](point)
+        if knot_offset == 0:
+          var reduced_values: array[s_spline.p, f64]
+          reduced_values[0] = values[0] + values[1]
+          for i in 1 ..< reduced_values.len:
+            reduced_values[i] = values[i + 1]
+
+          for a in 0 ..< s_spline.p:
+            for b in a ..< s_spline.p:
+              result.z_s_factors[a, b] += weight * reduced_values[a] *
+                reduced_values[b] * point
+        else:
+          for a in 0 .. s_spline.p:
+            for b in a .. s_spline.p:
+              result.z_s_factors[knot_offset + a - 1, knot_offset + b - 1] +=
+                weight * values[a] * values[b] * point
+
     const z_spline = Spline(h: settings.spacing, n: settings.nz, p: settings.base_spline_order)
     for k in z_spline.p ..< settings.nz:
       let offset = knot[z_spline](k + 1)
       let knot_offset = k - z_spline.p
+
       for i in 0..z_spline.p:
         let point = (z_spline.h * quadrature_root(z_spline.p + 1, i)) / 2 + offset + z_spline.h / 2
         let weight = z_spline.h / 2 * quadrature_weight(z_spline.p + 1, i)
@@ -65,6 +90,16 @@ proc build_reduced_mass_matrix(
         for a in 0 .. z_spline.p:
           for b in a .. z_spline.p:
             result.s_z_factors[knot_offset + a, knot_offset + b] +=
+              weight * values[a] * values[b]
+
+      for i in 0 ..< z_spline.p:
+        let point = (z_spline.h * quadrature_root(z_spline.p, i)) / 2 + offset + z_spline.h / 2
+        let weight = z_spline.h / 2 * quadrature_weight(z_spline.p, i)
+
+        let values = evaluate_m_spline[z_spline](point)
+        for a in 0 ..< z_spline.p:
+          for b in a ..< z_spline.p:
+            result.z_z_factors[knot_offset + a, knot_offset + b] +=
               weight * values[a] * values[b]
   else:
     {.fatal: "TODO".}
@@ -138,6 +173,7 @@ proc mass_matrix_test() =
     spacing: 1
   )
   const matrix = build_reduced_mass_matrix(space, settings)
-  "rmm.npy".write_npy_band_matrix_f64(matrix.s_s_factors)
+  echo matrix.z_z_factors
+  "rmm.npy".write_npy_band_matrix_f64(matrix.z_s_factors)
 
 mass_matrix_test()
