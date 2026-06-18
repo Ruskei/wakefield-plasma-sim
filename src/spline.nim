@@ -1,9 +1,5 @@
 import std/strutils
 import std/macros
-import std/monotimes
-import std/times
-import std/random
-import std/sequtils
 import std/math
 
 import short_names
@@ -120,7 +116,7 @@ macro generate_b_spline_evaluation(spline: static Spline; p: static int; x: type
       let `k_identifier` = floor(`x` / `h_value`).int + `spline_p_value` + 1
     boundary_statement_list.add k_initialization
 
-    for i in 1 .. (2 * p + 2):
+    for i in 2 .. (2 * p + 1):
       let knot_identifier = ident("knot_" & $i)
       let offset_lit = new_lit(p + spline.p + 2 - i)
       let knot_initialization = quote do:
