@@ -13,27 +13,59 @@ type
   ] = object
     # b_a = a factor for b component
     when space == kd_poloidal_0:
-      s_factors: BandMatrix[settings.ns - 1, settings.base_spline_order + 1, f64]
-      z_factors: BandMatrix[settings.nz, settings.base_spline_order + 1, f64]
+      s_factors*: BandMatrix[
+        field_dimensions[space, settings]().s,
+        settings.base_spline_order + 1, f64]
+      z_factors*: BandMatrix[
+        field_dimensions[space, settings]().z,
+        settings.base_spline_order + 1, f64]
     elif space == kd_poloidal_1:
-      s_s_factors: BandMatrix[settings.ns - 2, settings.base_spline_order, f64]
-      s_z_factors: BandMatrix[settings.nz, settings.base_spline_order + 1, f64]
-      z_s_factors: BandMatrix[settings.ns - 1, settings.base_spline_order + 1, f64]
-      z_z_factors: BandMatrix[settings.nz - 1, settings.base_spline_order, f64]
+      s_s_factors*: BandMatrix[
+        field_dimensions[space, settings]().s_s,
+        settings.base_spline_order, f64]
+      s_z_factors*: BandMatrix[
+        field_dimensions[space, settings]().s_z,
+        settings.base_spline_order + 1, f64]
+      z_s_factors*: BandMatrix[
+        field_dimensions[space, settings]().z_s,
+        settings.base_spline_order + 1, f64]
+      z_z_factors*: BandMatrix[
+        field_dimensions[space, settings]().z_z,
+        settings.base_spline_order, f64]
     elif space == kd_poloidal_2:
-      s_factors: BandMatrix[settings.ns - 2, settings.base_spline_order, f64]
-      z_factors: BandMatrix[settings.nz - 1, settings.base_spline_order, f64]
+      s_factors*: BandMatrix[
+        field_dimensions[space, settings]().s,
+        settings.base_spline_order, f64]
+      z_factors*: BandMatrix[
+        field_dimensions[space, settings]().z,
+        settings.base_spline_order, f64]
     elif space == kd_toroidal_1:
-      s_factors: BandMatrix[settings.ns - 2, settings.base_spline_order + 1, f64]
-      z_factors: BandMatrix[settings.nz, settings.base_spline_order + 1, f64]
+      s_factors*: BandMatrix[
+        field_dimensions[space, settings]().s,
+        settings.base_spline_order + 1, f64]
+      z_factors*: BandMatrix[
+        field_dimensions[space, settings]().z,
+        settings.base_spline_order + 1, f64]
     elif space == kd_toroidal_2:
-      s_s_factors: BandMatrix[settings.ns - 2, settings.base_spline_order + 1, f64]
-      s_z_factors: BandMatrix[settings.nz - 1, settings.base_spline_order, f64]
-      z_s_factors: BandMatrix[settings.ns - 2, settings.base_spline_order, f64]
-      z_z_factors: BandMatrix[settings.nz, settings.base_spline_order + 1, f64]
+      s_s_factors*: BandMatrix[
+        field_dimensions[space, settings]().s_s,
+        settings.base_spline_order + 1, f64]
+      s_z_factors*: BandMatrix[
+        field_dimensions[space, settings]().s_z,
+        settings.base_spline_order, f64]
+      z_s_factors*: BandMatrix[
+        field_dimensions[space, settings]().z_s,
+        settings.base_spline_order, f64]
+      z_z_factors*: BandMatrix[
+        field_dimensions[space, settings]().z_z,
+        settings.base_spline_order + 1, f64]
     else:
-      s_factors: BandMatrix[settings.ns - 2, settings.base_spline_order, f64]
-      z_factors: BandMatrix[settings.nz - 1, settings.base_spline_order, f64]
+      s_factors*: BandMatrix[
+        field_dimensions[space, settings]().s,
+        settings.base_spline_order, f64]
+      z_factors*: BandMatrix[
+        field_dimensions[space, settings]().z,
+        settings.base_spline_order, f64]
   ReducedMassMatrixRef*[
     space: static SpaceKind,
     settings: static SimulationSettings

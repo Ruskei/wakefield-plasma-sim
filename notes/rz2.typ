@@ -755,9 +755,10 @@ $
 $
 in electrostatics we have
 $
+  bold(e)^p = R_p^1 macron(bold(e))^p \
   bold(e)^p = - cal(G) bold(phi) \
-  macron(bold(e))^p
-    = 
+  R_p^1 macron(bold(e))^p
+    = - cal(G) bold(phi) \
 $
 
 == Spline Math

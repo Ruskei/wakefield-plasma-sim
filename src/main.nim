@@ -16,6 +16,11 @@ type
   Simulation[settings: static SimulationSettings] = ref object
     ρ: DenseMatrix[settings.ns - 1, settings.nz, f64]
 
+# proc solve_for_reduced_potential[
+#   settings: static SimulationSettings
+# ](reduced_charge: Field[kd_poloidal_0, settings]) =
+#
+
 # needs to be refactored/checked to properly handle the fact that it's a reduced representation
 proc deposit_ρ[settings: static SimulationSettings](
   ρ: var DenseMatrix[settings.ns - 1, settings.nz, f64];
